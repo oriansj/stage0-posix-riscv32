@@ -25,6 +25,7 @@
 # s6: malloc pointer
 
     RD_A2 RS1_SP !8 LW                # Input file name
+    RD_A4 MV                          # Initialize register (set *rusage = NULL in waitid)
 
     RS1_A2 @_start_out BNEZ           # Use input file if specified
     # Else use kaem.run
