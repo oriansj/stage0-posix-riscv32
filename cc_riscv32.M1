@@ -1716,6 +1716,7 @@
     RD_A1 RS1_A2 !20 LW               ; member_type->TYPE
     RD_A1 RS1_A1 !4 LW                ; member_type->TYPE->SIZE
     RD_A0 RS1_A0 RS2_A1 MUL           ; member_type->type->size * numerate_string(global_token->s)
+    ; mul and div can be simulated with RV32I set if necessary. See implementation in armv7l.
 
     RD_S4 RS1_S4 LW                   ; global_token = global_token->next
 
