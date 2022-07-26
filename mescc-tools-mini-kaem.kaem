@@ -23,13 +23,6 @@
 ./riscv32/artifact/hex0 ./riscv32/hex1_riscv32.hex0 ./riscv32/artifact/hex1
 # hex1 adds support for single character labels
 
-#################################
-# Phase-1b Build catm from hex1 #
-#################################
-./riscv32/artifact/hex1 ./riscv32/catm_riscv32.hex1 ./riscv32/artifact/catm
-# catm removes the need for cat or shell support for redirection by providing
-# equivalent functionality via catm output_file input1 input2 ... inputN
-
 ################################
 # Phase-2 Build hex2 from hex1 #
 ################################
@@ -39,6 +32,13 @@
 # This allows it to function as an effective linker for later stages of the
 # bootstrap. This is a minimal version which will be used to bootstrap
 # cross-platform version in a later stage.
+
+#################################
+# Phase-2b Build catm from hex2 #
+#################################
+./riscv32/artifact/hex2-0 ./riscv32/catm_riscv32.hex2 ./riscv32/artifact/catm
+# catm removes the need for cat or shell support for redirection by providing
+# equivalent functionality via catm output_file input1 input2 ... inputN
 
 ###############################
 # Phase-3 Build M0 from hex2  #
