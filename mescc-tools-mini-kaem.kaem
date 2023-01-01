@@ -127,6 +127,7 @@
 	-f ./M2libc/fcntl.c \
 	-f ./M2libc/riscv32/linux/sys/stat.c \
 	-f ./M2libc/stdlib.c \
+	-f ./M2libc/stdio.h \
 	-f ./M2libc/stdio.c \
 	-f ./M2libc/bootstrappable.c \
 	-f ./mescc-tools/hex2.h \
@@ -163,6 +164,7 @@
 	-f ./M2libc/riscv32/linux/fcntl.c \
 	-f ./M2libc/fcntl.c \
 	-f ./M2libc/stdlib.c \
+	-f ./M2libc/stdio.h \
 	-f ./M2libc/stdio.c \
 	-f ./M2libc/bootstrappable.c \
 	-f ./mescc-tools/stringify.c \
@@ -199,6 +201,7 @@
 	-f ./M2libc/fcntl.c \
 	-f ./M2libc/riscv32/linux/sys/stat.c \
 	-f ./M2libc/stdlib.c \
+	-f ./M2libc/stdio.h \
 	-f ./M2libc/stdio.c \
 	-f ./M2libc/bootstrappable.c \
 	-f ./mescc-tools/hex2.h \
@@ -238,6 +241,7 @@
 	-f ./M2libc/riscv32/linux/fcntl.c \
 	-f ./M2libc/fcntl.c \
 	-f ./M2libc/stdlib.c \
+	-f ./M2libc/stdio.h \
 	-f ./M2libc/stdio.c \
 	-f ./M2libc/bootstrappable.c \
 	-f ./mescc-tools/Kaem/kaem.h \
