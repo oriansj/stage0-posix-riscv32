@@ -21,15 +21,13 @@
 # Register use:
 # s2: input fd
 # s3: output fd
-# s4: toggle
-# s5: hold
+# s4: pending high nibble or -1
 
 # Uses top of the stack as i/o buffer
 
 .text
 .global _start
 _start:
-    li s4, 0              # Initialize to 0
     lw a1, 8(sp)          # Input file name
 
     # Open input file and store FD in s2
@@ -53,75 +51,50 @@ _start:
     ecall
     mv s3, a0             # Save fd in s3 for later
 
-next_byte:
-    li a7, 63             # sys_read
-    mv a0, s2             # File descriptor
-    mv a1, sp             # Buffer
-    li a2, 1              # Size of what we want to read (set for all subsequent syscalls)
-    ecall
-
-    # If the file ended (0 bytes read) terminate
-    beqz a0, terminate
-
-    # Check if it's a comment
-    lb a0, (sp)
-    li t0, 0x23
-    beq a0, t0, loop             # a0 eq to '#'
-    li t0, 0x3B
-    bne a0, t0, not_comment
-    loop:
-        mv a0, s2             # File descriptor
-        ecall                 # sys_read
-
-        # If the file ended (0 bytes read) terminate
-        beqz a0, terminate
-        # Check if read byte is the end of the comment (i.e. a newline character),
-        # in that case we continue processing
-        lb a0, (sp)
-        li t0, 0xA
-        beq a0, t0, next_byte      # a0 eq to \n
-        li t0, 0xD
-        beq a0, t0, next_byte      # a0 eq to \r
-    j loop
-
-not_comment:
+    mv a1, sp
+    li a2, 1
+pair:
+    li s4, -1
+normal:
+    jal t2, read
+    li t0, 35
+    beq a0, t0, comment
+    li t0, 59
+    bne a0, t0, decode
+comment:
+    jal t2, read
+    li t0, 10
+    beq a0, t0, normal
+    li t0, 13
+    bne a0, t0, comment
+    j normal
+decode:
     addi t0, a0, -48
-    li t1, 10
-    bltu t0, t1, hex_read
+    sltiu t1, t0, 10
+    bnez t1, digit
     ori t0, a0, 32
     addi t0, t0, -97
-    li t1, 6
-    bgeu t0, t1, next_byte
+    sltiu t1, t0, 6
+    beqz t1, normal
     addi t0, t0, 10
-hex_read:
-    # END check hex -- leaves the half byte in t0
-
-    bnez s4, combine    # if toggle != 0 -> combine
-    # Toggle == 0, we need to prepare for later
-    mv s5, t0           # Load hold
-    li s4, 1            # Set toggle
-    j next_byte         # Read next byte
-
-combine:
-    # Combine half bytes
-    slli s5, s5, 4      # Shift logical left 4 times
-    add  a0, t0, s5     # Combine two half bytes
-    # Leaves the full byte in a0
-
-    # Values are combined, now we write in the file
-    sb a0, 0(sp)          # Store prepared byte in buffer
-    li a7, 64             # sys_write
-    mv a0, s3             # file descriptor (stdout)
+digit:
+    bltz s4, first
+    or t0, t0, s4
+    sb t0, 0(sp)
+    mv a0, s3
+    li a7, 64
     ecall
-
-    # Update globals
-    li s4, 0              # Clear toggle
-
-    # Read next byte
-    j next_byte
-
-terminate:
-    # Terminate program with 0 return code
-    li a7, 93             # sys_exit
+    j pair
+first:
+    slli s4, t0, 4
+    j normal
+read:
+    mv a0, s2
+    li a7, 63
     ecall
-# PROGRAM END
+    beqz a0, exit
+    lb a0, 0(sp)
+    jr t2
+exit:
+    li a7, 93
+    ecall
